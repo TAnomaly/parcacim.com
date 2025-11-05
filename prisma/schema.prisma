@@ -1,0 +1,169 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  BUYER
+  SELLER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  password      String
+  role          UserRole  @default(BUYER)
+  phone         String?
+  address       String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  shop          Shop?
+  orders        Order[]
+  cartItems     CartItem[]
+}
+
+model Shop {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  logo        String?
+  phone       String?
+  address     String?
+  email       String?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  ownerId     String    @unique
+  owner       User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  products    Product[]
+  orders      Order[]
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?
+  icon        String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  products    Product[]
+}
+
+model Product {
+  id            String    @id @default(cuid())
+  name          String
+  slug          String    @unique
+  description   String?
+  price         Float
+  comparePrice  Float?
+  stock         Int       @default(0)
+  sku           String?   @unique
+
+  // Araba parçası özel alanları
+  brand         String?
+  model         String?
+  year          String?
+  partNumber    String?
+  condition     String?   // Yeni, İkinci El, Yenilenmiş
+  compatibility String?   // Hangi araç modelleriyle uyumlu
+
+  images        String?   // JSON array olarak saklanacak
+  isActive      Boolean   @default(true)
+  isFeatured    Boolean   @default(false)
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  categoryId    String
+  category      Category  @relation(fields: [categoryId], references: [id])
+
+  shopId        String
+  shop          Shop      @relation(fields: [shopId], references: [id], onDelete: Cascade)
+
+  cartItems     CartItem[]
+  orderItems    OrderItem[]
+
+  @@index([categoryId])
+  @@index([shopId])
+  @@index([slug])
+}
+
+model CartItem {
+  id          String    @id @default(cuid())
+  quantity    Int       @default(1)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  productId   String
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  orderNumber     String      @unique
+  status          OrderStatus @default(PENDING)
+  total           Float
+
+  // Müşteri bilgileri
+  customerName    String
+  customerEmail   String
+  customerPhone   String
+  shippingAddress String
+
+  notes           String?
+
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  userId          String
+  user            User        @relation(fields: [userId], references: [id])
+
+  shopId          String
+  shop            Shop        @relation(fields: [shopId], references: [id])
+
+  items           OrderItem[]
+
+  @@index([userId])
+  @@index([shopId])
+}
+
+model OrderItem {
+  id          String    @id @default(cuid())
+  quantity    Int
+  price       Float
+  productName String
+
+  orderId     String
+  order       Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  productId   String
+  product     Product   @relation(fields: [productId], references: [id])
+}
