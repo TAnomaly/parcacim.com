@@ -8,17 +8,20 @@ Türkiye'nin en kapsamlı araba yedek parça pazaryeri platformu. Çok satıcıl
 - ✅ Gelişmiş ürün arama ve filtreleme
 - ✅ Kategori bazlı gezinme
 - ✅ Ürün detay sayfaları
-- ✅ Sepet yönetimi
-- ✅ Sipariş takibi
+- ✅ Sepet yönetimi (mağaza bazlı gruplama)
+- ✅ Checkout (sipariş tamamlama) sistemi
+- ✅ Sipariş takibi ve detaylı sipariş görüntüleme
+- ✅ Mağaza listeleme ve detay sayfaları
 - ✅ Kullanıcı hesap yönetimi
 
 ### Satıcı Özellikleri
 - ✅ Mağaza oluşturma ve yönetimi
-- ✅ Ürün ekleme/düzenleme/silme
-- ✅ Stok yönetimi
-- ✅ Sipariş yönetimi
-- ✅ Satış istatistikleri
-- ✅ Dashboard paneli
+- ✅ Ürün ekleme/düzenleme/silme (tam CRUD)
+- ✅ Stok yönetimi (otomatik stok düşürme)
+- ✅ Sipariş yönetimi ve durum güncelleme
+- ✅ Satış istatistikleri (gelir, ürün, sipariş sayıları)
+- ✅ Dashboard paneli (düşük stok uyarıları)
+- ✅ Gerçek zamanlı sipariş durumu güncelleme
 
 ### Teknik Özellikler
 - ✅ Next.js 14 (App Router)
