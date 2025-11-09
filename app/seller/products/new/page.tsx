@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { Upload, X } from "lucide-react";
 
 export default function NewProductPage() {
   const router = useRouter();
@@ -10,6 +11,8 @@ export default function NewProductPage() {
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [images, setImages] = useState<string[]>([]);
+  const [uploadingImages, setUploadingImages] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -43,6 +46,53 @@ export default function NewProductPage() {
     }
   };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setUploadingImages(true);
+
+    try {
+      const newImages: string[] = [];
+
+      for (let i = 0; i < Math.min(files.length, 5 - images.length); i++) {
+        const file = files[i];
+
+        // Check file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          alert(`${file.name} çok büyük. Maksimum 5MB olmalıdır.`);
+          continue;
+        }
+
+        // Check file type
+        if (!file.type.startsWith("image/")) {
+          alert(`${file.name} bir resim dosyası değil.`);
+          continue;
+        }
+
+        // Convert to base64
+        const reader = new FileReader();
+        const base64 = await new Promise<string>((resolve) => {
+          reader.onload = () => resolve(reader.result as string);
+          reader.readAsDataURL(file);
+        });
+
+        newImages.push(base64);
+      }
+
+      setImages([...images, ...newImages]);
+    } catch (err) {
+      console.error("Error uploading images:", err);
+      setError("Fotoğraflar yüklenirken bir hata oluştu");
+    } finally {
+      setUploadingImages(false);
+    }
+  };
+
+  const removeImage = (index: number) => {
+    setImages(images.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -57,6 +107,7 @@ export default function NewProductPage() {
           price: parseFloat(formData.price),
           comparePrice: formData.comparePrice ? parseFloat(formData.comparePrice) : null,
           stock: parseInt(formData.stock),
+          images: images.length > 0 ? JSON.stringify(images) : null,
         }),
       });
 
@@ -92,8 +143,65 @@ export default function NewProductPage() {
               </div>
             )}
 
-            {/* Basic Info */}
+            {/* Product Images */}
             <div>
+              <h3 className="text-lg font-semibold mb-4">Ürün Fotoğrafları</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Fotoğraflar (En fazla 5 adet, maksimum 5MB)
+                  </label>
+                  <div className="flex items-center gap-4">
+                    <label className="cursor-pointer">
+                      <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200">
+                        <Upload className="h-5 w-5" />
+                        <span>Fotoğraf Seç</span>
+                      </div>
+                      <input
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        disabled={images.length >= 5 || uploadingImages}
+                        className="hidden"
+                      />
+                    </label>
+                    {uploadingImages && (
+                      <span className="text-sm text-gray-600">Yükleniyor...</span>
+                    )}
+                  </div>
+                </div>
+
+                {images.length > 0 && (
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                    {images.map((img, index) => (
+                      <div key={index} className="relative group">
+                        <img
+                          src={img}
+                          alt={`Ürün ${index + 1}`}
+                          className="w-full h-32 object-cover rounded-lg border border-gray-300"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeImage(index)}
+                          className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                        {index === 0 && (
+                          <div className="absolute bottom-2 left-2 px-2 py-1 bg-blue-600 text-white text-xs rounded">
+                            Ana
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Basic Info */}
+            <div className="border-t pt-6">
               <h3 className="text-lg font-semibold mb-4">Temel Bilgiler</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="md:col-span-2">

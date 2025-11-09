@@ -192,13 +192,25 @@ export default function RegisterPage() {
           </div>
         </form>
 
-        <div className="text-center">
-          <Link
-            href="/seller/register"
-            className="text-sm text-blue-600 hover:text-blue-500"
-          >
-            Satıcı olarak kayıt olmak ister misiniz?
-          </Link>
+        <div className="text-center space-y-2">
+          <p className="text-sm text-gray-600">
+            Zaten hesabınız var mı?{" "}
+            <Link
+              href="/seller/become"
+              className="font-medium text-blue-600 hover:text-blue-500"
+            >
+              Satıcı olun
+            </Link>
+          </p>
+          <p className="text-sm">
+            veya{" "}
+            <Link
+              href="/seller/register"
+              className="font-medium text-blue-600 hover:text-blue-500"
+            >
+              Doğrudan satıcı olarak kayıt olun
+            </Link>
+          </p>
         </div>
       </div>
     </div>

@@ -86,7 +86,7 @@ export function Navbar() {
 
                 {userMenuOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 border">
-                    {session.user?.role === "SELLER" && (
+                    {session.user?.role === "SELLER" ? (
                       <>
                         <Link
                           href="/seller/dashboard"
@@ -105,6 +105,15 @@ export function Navbar() {
                           Ürünlerim
                         </Link>
                       </>
+                    ) : (
+                      <Link
+                        href="/seller/become"
+                        className="flex items-center px-4 py-2 text-green-600 hover:bg-gray-100 font-medium"
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        <Store className="h-4 w-4 mr-2" />
+                        Satıcı Ol
+                      </Link>
                     )}
                     <Link
                       href="/orders"
@@ -198,7 +207,7 @@ export function Navbar() {
 
             {session ? (
               <>
-                {session.user?.role === "SELLER" && (
+                {session.user?.role === "SELLER" ? (
                   <>
                     <Link
                       href="/seller/dashboard"
@@ -215,6 +224,14 @@ export function Navbar() {
                       Ürünlerim
                     </Link>
                   </>
+                ) : (
+                  <Link
+                    href="/seller/become"
+                    className="block text-green-600 hover:text-green-700 font-medium"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Satıcı Ol
+                  </Link>
                 )}
                 <Link
                   href="/orders"
