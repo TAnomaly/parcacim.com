@@ -3,11 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "node scripts/setup-env.js && next dev",
+    "build": "node scripts/setup-env.js && next build",
     "start": "next start",
     "lint": "next lint",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:seed": "tsx prisma/seed.ts",
+    "setup": "node scripts/setup-env.js && npm install",
+    "db:setup": "npx prisma generate && npx prisma migrate dev && npx prisma db seed"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
