@@ -10,26 +10,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserRole {
-  BUYER
-  SELLER
-  ADMIN
-}
-
-enum OrderStatus {
-  PENDING
-  PROCESSING
-  SHIPPED
-  DELIVERED
-  CANCELLED
-}
+// Note: SQLite doesn't support native enums, so we use String types
+// Valid UserRole values: BUYER, SELLER, ADMIN
+// Valid OrderStatus values: PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED
 
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
   name          String?
   password      String
-  role          UserRole  @default(BUYER)
+  role          String    @default("BUYER")
   phone         String?
   address       String?
   createdAt     DateTime  @default(now())
@@ -129,7 +119,7 @@ model CartItem {
 model Order {
   id              String      @id @default(cuid())
   orderNumber     String      @unique
-  status          OrderStatus @default(PENDING)
+  status          String      @default("PENDING")
   total           Float
 
   // Müşteri bilgileri
